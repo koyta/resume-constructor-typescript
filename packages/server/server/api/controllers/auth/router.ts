@@ -1,3 +1,7 @@
+/**
+ * Endpoint root: /api/v1/oauth
+ */
+
 import express from "express";
 import passport from "passport";
 import controller from "./controller";

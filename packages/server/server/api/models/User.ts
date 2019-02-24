@@ -8,15 +8,13 @@ export interface IUser extends Document {
   username: string;
   password?: string;
   fullname: string;
-  date_of_birth?: number;
 }
 
 const UserSchema = new Schema({
   _id: Schema.Types.ObjectId,
   username: { type: String, required: true, index: { unique: true } },
   password: { type: String },
-  fullname: { type: String, required: true },
-  date_of_birth: { type: Number, required: false }
+  fullname: { type: String, required: true }
 });
 
 // UserSchema.pre<IUser>("save", function(next: HookNextFunction) {
