@@ -32,7 +32,7 @@ export default class ExpressServer {
   }
 
   router(routes: (app: Application) => void): ExpressServer {
-    swaggerify(app, routes);
+    routes(app);
     return this;
   }
 
