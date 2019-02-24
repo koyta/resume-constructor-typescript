@@ -1,7 +1,7 @@
 swagger: "2.0"
 info:
   version: 1.0.0
-  title: server
+  title: Resume Server
   description: Resume Server
 basePath: /api/v1
 tags:
@@ -31,57 +31,6 @@ definitions:
         example: no_stress
 
 paths:
-  /oauth/logout:
-    get:
-      responses:
-        200:
-          description: Logout successful
-  /users/me:
-    get:
-      responses:
-        200:
-          description: Returns current user profile
-        401:
-          description: User not authorized
-  /examples:
-    get:
-      tags:
-        - Examples
-      description: Fetch all examples
-      responses:
-        200:
-          description: Returns all examples
-    post:
-      tags:
-        - Examples
-      description: Create a new example
-      parameters:
-        - name: example
-          in: body
-          description: an example
-          required: true
-          schema:
-            $ref: "#/definitions/ExampleBody"
-      responses:
-        200:
-          description: Returns all examples
-
-  /examples/{id}:
-    get:
-      tags:
-        - Examples
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: The id of the example to retrieve
-          type: integer
-      responses:
-        200:
-          description: Return the example with the specified id
-        404:
-          description: Example not found
-
   /spec:
     get:
       tags:
@@ -89,6 +38,20 @@ paths:
       responses:
         200:
           description: Return the API specification
+
+  # Users
+
+  /users/me:
+    get:
+      tags:
+        - Users
+      responses:
+        200:
+          description: Returns current user profile
+        401:
+          description: User not authorized
+
+  # OAuth
 
   /oauth/github:
     get:
@@ -105,3 +68,11 @@ paths:
       responses:
         200:
           description: Successful login
+
+  /oauth/logout:
+    get:
+      tags:
+        - Authentication
+      responses:
+        200:
+          description: Logout is successful
