@@ -5,6 +5,8 @@
 import express from "express";
 import passport from "passport";
 import controller from "./controller";
+import middleware from "./middleware";
+
 export default express
   .Router()
   .get(`/github`, passport.authenticate("github"))
@@ -13,4 +15,5 @@ export default express
     passport.authenticate("github"),
     controller.passportGithubCallback
   )
-  .get("/logout", controller.logout);
+  .get("/logout", controller.logout)
+  .post("/register", middleware.basicAuthentication, controller.register);

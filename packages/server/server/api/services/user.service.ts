@@ -1,15 +1,13 @@
-import User, { IUser } from "../models/User";
+import User, { IUserBase, IUserWithPassword } from "../models/User";
 import { Profile } from "passport-github";
 import { Document } from "mongoose";
 
-export class UserService {
+class UserService {
   async getOneUser(id: string): Promise<Document | Error> {
     if (!id) return Promise.reject(Error("You should provide ID of user"));
     return User.findById(id)
       .exec()
-      .then(user => {
-        return Promise.resolve(user);
-      })
+      .then(user => Promise.resolve(user))
       .catch(err => Promise.reject(err));
   }
 
@@ -20,12 +18,12 @@ export class UserService {
       .catch(err => Promise.reject(err));
   }
 
-  async createUser(user: IUser): Promise<Document | Error> {
+  async createUser(user: IUserWithPassword): Promise<Document | Error> {
     if (!user) {
       return Promise.reject(Error("You should provide new user object"));
     }
 
-    return User.create(<IUser>{ ...user })
+    return User.create(user)
       .then(createdUser => Promise.resolve(createdUser))
       .catch(err => Promise.reject(err));
   }
@@ -39,12 +37,15 @@ export class UserService {
       .catch(err => Promise.reject(err));
   }
 
-  async updateUser(id: string, user): Promise<Document | Error> {
+  async updateUser(
+    id: string,
+    user: IUserBase | IUserWithPassword
+  ): Promise<Document | Error> {
     if (!id || !user) {
       return Promise.reject(Error("You should provide ID and new User object"));
     }
 
-    return User.findByIdAndUpdate(id, user)
+    return User.findByIdAndUpdate(id, user, { new: true })
       .exec()
       .then(updatedUser => Promise.resolve(updatedUser))
       .catch(err => Promise.reject(err));

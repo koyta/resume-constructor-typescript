@@ -16,16 +16,17 @@ export default () => {
       {
         clientID: process.env.GITHUB_CLIENT_ID,
         clientSecret: process.env.GITHUB_CLIENT_SECRET,
-        callbackURL: `http://localhost:3000/api/v1/oauth/github/callback`,
+        callbackURL: `http://localhost:${
+          process.env.PORT
+        }/api/v1/oauth/github/callback`,
         scope: ["repo:status"]
       },
       (accessToken: string, refreshToken: string, profile: Profile, done) => {
         l.info(`tokens: [access: ${accessToken}, refresh: ${refreshToken}]`);
         l.info(`Username: ${profile.username}`);
+        l.info(profile);
         AuthService.findAndUpdateUser(profile, accessToken)
-          .then(res => {
-            done(null, profile);
-          })
+          .then(() => done(null, profile))
           .catch(() => l.error("Error while OAuth and finding user"));
       }
     )

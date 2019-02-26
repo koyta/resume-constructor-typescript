@@ -1,39 +1,40 @@
-import { model, Schema, HookNextFunction, Document } from "mongoose";
-import { genSalt, hash } from "bcrypt";
+import { model, Schema, HookNextFunction, Document, Types } from "mongoose";
+import bcrypt from "bcrypt";
 
 const SALT_WORK_FACTOR = 10;
 
-export interface IUser extends Document {
+export interface IUserBase extends Document {
   _id: string;
   username: string;
-  password?: string;
   fullname: string;
 }
 
+export interface IUserWithPassword extends IUserBase {
+  password: string;
+}
+
 const UserSchema = new Schema({
-  _id: Schema.Types.ObjectId,
   username: { type: String, required: true, index: { unique: true } },
   password: { type: String },
   fullname: { type: String, required: true }
 });
 
-// UserSchema.pre<IUser>("save", function(next: HookNextFunction) {
-//   // only hash the password if it has been modified (or is new)
-//   if (!this.isModified("password")) return next();
-
-//   // generate a salt
-//   genSalt(SALT_WORK_FACTOR, function(err, salt) {
-//     if (err) return next(err);
-
-//     // hash the password along with our new salt
-//     hash(this.password, salt, function(err, hash) {
-//       if (err) return next(err);
-
-//       // override the cleartext password with the hashed one
-//       this.password = hash;
-//       next();
-//     });
-//   });
-// });
+UserSchema.pre<IUserWithPassword>("save", function(next: HookNextFunction) {
+  // only hash the password if it has been modified (or is new)
+  const user = this;
+  if (!user.password) return next();
+  if (!user.isModified("password")) return next();
+  // generate a salt
+  bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
+    if (err) return next(err);
+    // hash the password along with our new salt
+    bcrypt.hash(user.password, salt, function(err, hash) {
+      if (err) return next(err);
+      // override the cleartext password with the hashed one
+      user.password = hash;
+      next();
+    });
+  });
+});
 
 export default model("User", UserSchema);
